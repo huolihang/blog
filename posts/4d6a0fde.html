@@ -1,0 +1,541 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.3.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/huolihang-32x32.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/huolihang-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/huolihang-16x16.png">
+  <link rel="mask-icon" href="/images/huolihang.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"huolihang.top","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="建站缘由前段时间在学习微信开发，微信开发里涉及服务器端的操作需要域名备案，久经考虑于是在阿里云办理了备案流程。整个备案流程虽说繁琐但也比较顺利，经历了提交备案申请 -&gt; 阿里云初审 -&gt; 提交管局 -&gt; ICP备案 -&gt; 公安备案，总算成功备案下来。 作为一个开发初学者，恰逢自己手中也有一台闲置的服务器，看了一些知乎大佬们的奇妙操作，我的心里也萌动了一些想法，加上手中这个备">
+<meta property="og:type" content="article">
+<meta property="og:title" content="nginx的常用命令">
+<meta property="og:url" content="https://huolihang.top/posts/4d6a0fde.html">
+<meta property="og:site_name" content="活力航の小站">
+<meta property="og:description" content="建站缘由前段时间在学习微信开发，微信开发里涉及服务器端的操作需要域名备案，久经考虑于是在阿里云办理了备案流程。整个备案流程虽说繁琐但也比较顺利，经历了提交备案申请 -&gt; 阿里云初审 -&gt; 提交管局 -&gt; ICP备案 -&gt; 公安备案，总算成功备案下来。 作为一个开发初学者，恰逢自己手中也有一台闲置的服务器，看了一些知乎大佬们的奇妙操作，我的心里也萌动了一些想法，加上手中这个备">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://huolihang.top/posts/4d6a0fde/jiayou.jpeg">
+<meta property="article:published_time" content="2021-03-01T08:37:27.000Z">
+<meta property="article:modified_time" content="2021-03-01T14:06:53.738Z">
+<meta property="article:author" content="huolihang">
+<meta property="article:tag" content="nginx">
+<meta property="article:tag" content="服务器">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://huolihang.top/posts/4d6a0fde/jiayou.jpeg">
+
+<link rel="canonical" href="https://huolihang.top/posts/4d6a0fde.html">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>nginx的常用命令 | 活力航の小站</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">活力航の小站</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">技术生活学习笔记</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://huolihang.top/posts/4d6a0fde.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/huolihang.svg">
+      <meta itemprop="name" content="huolihang">
+      <meta itemprop="description" content="想当画家的程序员儿">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="活力航の小站">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          nginx的常用命令
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2021-03-01 16:37:27 / 修改时间：22:06:53" itemprop="dateCreated datePublished" datetime="2021-03-01T16:37:27+08:00">2021-03-01</time>
+            </span>
+
+          
+            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span><br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>940</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>1 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h2 id="建站缘由"><a href="#建站缘由" class="headerlink" title="建站缘由"></a>建站缘由</h2><p>前段时间在学习微信开发，微信开发里涉及服务器端的操作需要域名备案，久经考虑于是在阿里云办理了备案流程。整个备案流程虽说繁琐但也比较顺利，经历了提交备案申请 -&gt; 阿里云初审 -&gt; 提交管局 -&gt; ICP备案 -&gt; 公安备案，总算成功备案下来。</p>
+<p>作为一个开发初学者，恰逢自己手中也有一台闲置的服务器，看了一些知乎大佬们的奇妙操作，我的心里也萌动了一些想法，加上手中这个备案：</p>
+<p><strong>“建个个人网站吧”，我心里这样想。</strong></p>
+<p>这个网站的建立，让我不禁思考，我也得努力整理整理自己的生活。以前做一些开发的时候，总是面向搜索引擎编程，感觉心里缺乏一个系统的整体的框架结构。也想把一些生活、学习记录在上面，算是对自己经历的一个交代。</p>
+<p>博客使用Hexo+云主机进行部署。为什么不用github？大概因为云主机空闲，而且咱域名备案了不用白不用吧，后续在这个网站中，我们还将继续进行一些更有趣，更好玩的开发实践，记录更多有趣，更有意思的生活。为成为一名有用且有趣的程序员儿努力奋斗！</p>
+<p><img src="/posts/4d6a0fde/jiayou.jpeg" alt="img"></p>
+<h2 id="nginx基本命令"><a href="#nginx基本命令" class="headerlink" title="nginx基本命令"></a>nginx基本命令</h2><p>nginx是一个常用的命令，第一篇博文，我们就来看看nginx的常用命令。（本服务器使用的环境是Ubuntu 20.04 LTS）</p>
+<h3 id="nginx的安装"><a href="#nginx的安装" class="headerlink" title="nginx的安装"></a>nginx的安装</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo apt-get install nginx</span><br></pre></td></tr></table></figure>
+<p>Ubuntu安装主要文件结构为：（以nginx 18.0为例）</p>
+<table>
+<thead>
+<tr>
+<th>文件</th>
+<th>地址</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>配置文件</td>
+<td>/etc/nginx（每个虚拟主机已经安排在了/etc/nginx/sites-available）</td>
+</tr>
+<tr>
+<td>程序文件</td>
+<td>/usr/sbin/nginx</td>
+</tr>
+<tr>
+<td>日志文件</td>
+<td>/var/log/nginx</td>
+</tr>
+<tr>
+<td>启动脚本nginx</td>
+<td>/etc/init.d/</td>
+</tr>
+<tr>
+<td>虚拟主机的目录</td>
+<td>/var/www/（nginx-default）有无括号与/etc/nginx/sites-available配置相关</td>
+</tr>
+</tbody></table>
+<h3 id="nginx的验证"><a href="#nginx的验证" class="headerlink" title="nginx的验证"></a>nginx的验证</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">nginx -v</span><br></pre></td></tr></table></figure>
+<p>会显示当前安装的nginx版本。</p>
+<h3 id="nginx的启动"><a href="#nginx的启动" class="headerlink" title="nginx的启动"></a>nginx的启动</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">nginx -c &#x2F;path&#x2F;to&#x2F;nginx.conf</span><br></pre></td></tr></table></figure>
+<p><code>-c</code> 选项制定了nginx的配置文件路径和</p>
+<h3 id="nginx的停止"><a href="#nginx的停止" class="headerlink" title="nginx的停止"></a>nginx的停止</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">nginx -s stop  : 快速停止nginx</span><br><span class="line">         quit  : 完整有序的停止nginx</span><br></pre></td></tr></table></figure>
+
+
+<h3 id="检验nginx的配置文件"><a href="#检验nginx的配置文件" class="headerlink" title="检验nginx的配置文件"></a>检验nginx的配置文件</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">nginx -t</span><br></pre></td></tr></table></figure>
+
+
+<h3 id="重启nginx服务"><a href="#重启nginx服务" class="headerlink" title="重启nginx服务"></a>重启nginx服务</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">nginx -s reload</span><br></pre></td></tr></table></figure>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/nginx/" rel="tag"># nginx</a>
+              <a href="/tags/%E6%9C%8D%E5%8A%A1%E5%99%A8/" rel="tag"># 服务器</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item"></div>
+      <div class="post-nav-item">
+    <a href="/posts/21ff1f88.html" rel="next" title="【读书】食梦貘">
+      【读书】食梦貘 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%BB%BA%E7%AB%99%E7%BC%98%E7%94%B1"><span class="nav-number">1.</span> <span class="nav-text">建站缘由</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#nginx%E5%9F%BA%E6%9C%AC%E5%91%BD%E4%BB%A4"><span class="nav-number">2.</span> <span class="nav-text">nginx基本命令</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#nginx%E7%9A%84%E5%AE%89%E8%A3%85"><span class="nav-number">2.1.</span> <span class="nav-text">nginx的安装</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#nginx%E7%9A%84%E9%AA%8C%E8%AF%81"><span class="nav-number">2.2.</span> <span class="nav-text">nginx的验证</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#nginx%E7%9A%84%E5%90%AF%E5%8A%A8"><span class="nav-number">2.3.</span> <span class="nav-text">nginx的启动</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#nginx%E7%9A%84%E5%81%9C%E6%AD%A2"><span class="nav-number">2.4.</span> <span class="nav-text">nginx的停止</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%A3%80%E9%AA%8Cnginx%E7%9A%84%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6"><span class="nav-number">2.5.</span> <span class="nav-text">检验nginx的配置文件</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%87%8D%E5%90%AFnginx%E6%9C%8D%E5%8A%A1"><span class="nav-number">2.6.</span> <span class="nav-text">重启nginx服务</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="huolihang"
+      src="/images/huolihang.svg">
+  <p class="site-author-name" itemprop="name">huolihang</p>
+  <div class="site-description" itemprop="description">想当画家的程序员儿</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">2</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+        <span class="site-state-item-count">4</span>
+        <span class="site-state-item-name">标签</span>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/huolihang" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;huolihang" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:huolihang@outlook.com" title="E-Mail → mailto:huolihang@outlook.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">huolihang</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-area"></i>
+    </span>
+      <span class="post-meta-item-text">站点总字数：</span>
+    <span title="站点总字数">3k</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+      <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
+    <span title="站点阅读时长">3 分钟</span>
+</div>
+  <div class="beian">ICP备案号：<a href="https://beian.miit.gov.cn/" rel="noopener" target="_blank">滇ICP备2021000958号-1 </a>
+      <img src="/images/beian.png" style="display: inline-block;"><a href="http://www.beian.gov.cn/portal/registerSystemInfo?recordcode=53018102000165" rel="noopener" target="_blank">滇公网安备 53018102000165号 </a>
+  </div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+<div id="sitetime"></div>
+<script language=javascript>
+	function siteTime(){
+		window.setTimeout("siteTime()", 1000);
+		var seconds = 1000;
+		var minutes = seconds * 60;
+		var hours = minutes * 60;
+		var days = hours * 24;
+		var years = days * 365;
+		var today = new Date();
+		var todayYear = today.getFullYear();
+		var todayMonth = today.getMonth()+1;
+		var todayDate = today.getDate();
+		var todayHour = today.getHours();
+		var todayMinute = today.getMinutes();
+		var todaySecond = today.getSeconds();
+		/* 
+		Date.UTC() -- 返回date对象距世界标准时间(UTC)1970年1月1日午夜之间的毫秒数(时间戳)
+		year - 作为date对象的年份，为4位年份值
+		month - 0-11之间的整数，做为date对象的月份
+		day - 1-31之间的整数，做为date对象的天数
+		hours - 0(午夜24点)-23之间的整数，做为date对象的小时数
+		minutes - 0-59之间的整数，做为date对象的分钟数
+		seconds - 0-59之间的整数，做为date对象的秒数
+		microseconds - 0-999之间的整数，做为date对象的毫秒数
+        */
+		var t1 = Date.UTC(2020,02,13,15,00,00); //北京时间2018-2-13 00:00:00
+		var t2 = Date.UTC(todayYear,todayMonth,todayDate,todayHour,todayMinute,todaySecond);
+		var diff = t2-t1;
+		var diffYears = Math.floor(diff/years);
+		var diffDays = Math.floor((diff/days)-diffYears*365);
+		var diffHours = Math.floor((diff-(diffYears*365+diffDays)*days)/hours);
+		var diffMinutes = Math.floor((diff-(diffYears*365+diffDays)*days-diffHours*hours)/minutes);
+		var diffSeconds = Math.floor((diff-(diffYears*365+diffDays)*days-diffHours*hours-diffMinutes*minutes)/seconds);
+		document.getElementById("sitetime").innerHTML=" 已运行"+/*diffYears+" 年 "+*/diffDays+" 天 "+diffHours+" 小时 "+diffMinutes+" 分钟 "+diffSeconds+" 秒";
+	}
+	siteTime();
+</script>
+
+
+    <script async src="//dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>
