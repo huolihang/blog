@@ -63,6 +63,41 @@
       </tags>
   </entry>
   <entry>
+    <title>【算法设计与分析】递归算法的复杂度分析</title>
+    <url>/posts/959624b3.html</url>
+    <content><![CDATA[<p>介绍3种计算递归算法的时间复杂度的常用方法。</p>
+<a id="more"></a>
+
+<h3 id="Substitution-Method"><a href="#Substitution-Method" class="headerlink" title="Substitution Method"></a>Substitution Method</h3><p>类似于数学归纳法，主要步骤如下：</p>
+<ol>
+<li>猜测解的形式</li>
+<li>通过推到验证</li>
+<li>解出解的参数</li>
+</ol>
+<p>【例1】 $T(n)=4T(n/2)+n$ ，猜测其上界为$O(n^3)$ ，考虑分别证明 $O$ 和 $\Omega$ 。思路是先假设对于 $1,2,\cdots,k$ 都满足 $T(k) \le cn^3$ 。考虑 $n=k+1$ 的情形：<br>$$<br>\begin{equation}<br>\begin{aligned}<br>T(n) &amp;= 4T(n/2) + n \\<br>&amp;\le 4c(n/2)^2 + n \\<br>&amp;=(c/2)n^3 + n \\<br>&amp;=cn^3 - ((c/2)n^3-n) \\<br>&amp;\le cn^3<br>\end{aligned}<br>\end{equation}<br>$$<br>参数 $c$ 只需要满足： $(c/2)n^3-n &gt; 0$ ， 即 $c \gt 2$ 且 $n \gt 1$ 。</p>
+<p>关于base的讨论： 对于 $n&lt;n_0$ 的情形，当$n_0$ 较小时：我们认为 $T(n) = \Theta(1)$ 。</p>
+<p>对于 $1 \le n \le n_0$ ， 我们有 $T(n)=\Theta(1) \le cn^3$ ， 当 $c$ 取得足够大时满足。</p>
+<blockquote>
+<p>题目技巧：有时可以减去一个小项</p>
+<p>$T(k) \le c_1k^2 - c_2k$</p>
+</blockquote>
+<h3 id="递归树方法"><a href="#递归树方法" class="headerlink" title="递归树方法"></a>递归树方法</h3><p>画一棵递归树，直观分析：</p>
+<p>【例2】 $T(n)=T(n/4)+T(n/2)+n^2$</p>
+<p><img src="/posts/959624b3/image-20210305084457501.png" alt="image-20210305084457501"></p>
+<p>注意：每一个节点上表示的是当前节点归并的复杂度。</p>
+<p>注释：最后一步因为等比数列比小于1，必定收敛</p>
+<h3 id="主方法"><a href="#主方法" class="headerlink" title="主方法"></a>主方法</h3><p>可以解决递归式为： $T(n) = aT(n/b) + f(n) $ 其中 $a \ge 1, b&gt;1$ 。</p>
+<p><img src="/posts/959624b3/image-20210305090445885.png" alt="image-20210305090445885"></p>
+<p>理解与分析：</p>
+<p><img src="/posts/959624b3/image-20210305091007077.png" alt="image-20210305091007077"></p>
+]]></content>
+      <tags>
+        <tag>算法</tag>
+        <tag>算法设计与分析</tag>
+        <tag>复杂度</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>【读书】食梦貘</title>
     <url>/posts/21ff1f88.html</url>
     <content><![CDATA[<hr>
